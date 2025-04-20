@@ -17,6 +17,8 @@ namespace MPos
 {
     public partial class MainForm : DragSnapForm
     {
+        private const int CORNER_RADIUS = 20;
+
         private WinFormsWindowManager manager;
         private IUpdateChecker updateChecker;
         private Timer timer;
@@ -47,7 +49,7 @@ namespace MPos
         {
             Settings = new Settings();
             Position = new PositionData();
-            this.Padding = new Padding(1); // space for border
+            //this.Padding = new Padding(1); // space for border
             initManager();
             updateChecker = new WinFormsUpdateChecker(Program.UpdateCheckUrl, this);
             InitializeComponent();
@@ -161,10 +163,9 @@ namespace MPos
             this.Width = (int)(220 * factor);
             lstPositions.Visible = Settings.PositionLogVisible;
             lstPositions.ItemHeight = (int)(factor * Settings.FontSize + 6);
-            int radius = 8;
-            Region = Region.FromHrgn(WinApi.CreateRoundRectRgn(0, 0, Width, Height, radius, radius));
             panDraw.Invalidate();
             lstPositions.Invalidate();
+            UpdateRegion();
         }
 
         private void Timer_Tick(object sender, EventArgs e) => updatePosition();
@@ -254,13 +255,18 @@ namespace MPos
         private void applyCurrentTheme()
         {
             // --- Set back colors of elements ---
-            this.BackColor = Settings.DarkMode ? Color.FromArgb(16, 16, 16) : SystemColors.Control;
+            this.BackColor = Settings.DarkMode
+              ? Color.FromArgb(10, 10, 60)   // Azul oscuro, casi gris
+              : Color.FromArgb(225, 225, 225); // Gris claro, un poco más oscuro que el original
+
             lstPositions.BackColor = BackColor;
             colorTable.Dark = Settings.DarkMode;
+
             // --- Set foreground colors of controls ---
             contextMain.ForeColor = Settings.DarkMode ? Color.White : Color.Black;
             contextList.ForeColor = contextMain.ForeColor;
             contextView.ForeColor = contextMain.ForeColor;
+
             // Explicitly set foreground color of menu items.
             foreach (ToolStripItem item in contextMain.Items)
             {
@@ -519,51 +525,105 @@ namespace MPos
             return dpiX;
         }
 
-        protected override CreateParams CreateParams
-        {
-            get
-            {
-                const int CS_DROPSHADOW = 0x00020000;
-                CreateParams cp = base.CreateParams;
-                cp.ClassStyle |= CS_DROPSHADOW;
-                return cp;
-            }
-        }
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            base.OnPaint(e);
-            //Color borderColor = Settings.DarkMode ? Color.DimGray : Color.DarkGray;
-            //ControlPaint.DrawBorder(e.Graphics, this.ClientRectangle, borderColor, ButtonBorderStyle.Solid);
+        //protected override CreateParams CreateParams
+        //{
+        //    get
+        //    {
+        //        const int CS_DROPSHADOW = 0x00020000;
+        //        CreateParams cp = base.CreateParams;
+        //        cp.ClassStyle |= CS_DROPSHADOW;
+        //        return cp;
+        //    }
+        //}
+        //protected override void OnPaint(PaintEventArgs e)
+        //{
+        //    base.OnPaint(e);
 
-            int radius = 12;
-            using (GraphicsPath path = new GraphicsPath())
-            {
-                path.AddArc(0, 0, radius, radius, 180, 90);
-                path.AddArc(Width - radius - 1, 0, radius, radius, 270, 90);
-                path.AddArc(Width - radius - 1, Height - radius - 1, radius, radius, 0, 90);
-                path.AddArc(0, Height - radius - 1, radius, radius, 90, 90);
-                path.CloseAllFigures();
+        //    int radius = 12;
+        //    Rectangle rect = new Rectangle(0, 0, this.Width - 1, this.Height - 1);
 
-                //using (Pen pen = new Pen(Settings.DarkMode ? Color.DimGray : Color.DarkGray, 1))
-                //{
-                //    e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                //    e.Graphics.DrawPath(pen, path);
-                //}
+        //    using (GraphicsPath path = new GraphicsPath())
+        //    {
+        //        path.AddArc(rect.X, rect.Y, radius, radius, 180, 90);
+        //        path.AddArc(rect.Right - radius, rect.Y, radius, radius, 270, 90);
+        //        path.AddArc(rect.Right - radius, rect.Bottom - radius, radius, radius, 0, 90);
+        //        path.AddArc(rect.X, rect.Bottom - radius, radius, radius, 90, 90);
+        //        path.CloseFigure();
 
-                using (Pen pen = new Pen(Color.DeepSkyBlue, 1.5f)) // 🎨 grosor y color aquí
-                {
-                    e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                    e.Graphics.DrawPath(pen, path);
-                }
-            }
+        //        e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
-        }
+        //        // 🌫️ Sombra difusa simulada
+        //        for (int i = 1; i <= 3; i++)
+        //        {
+        //            using (Pen shadowPen = new Pen(Color.FromArgb(30 - i * 5, 0, 0, 0), i))
+        //            {
+        //                shadowPen.Alignment = PenAlignment.Center; // ← más seguro
+        //                e.Graphics.DrawPath(shadowPen, path);
+        //            }
+        //        }
 
+        //        // 🌓 Borde gris adaptado
+        //        Color borderColor = Settings.DarkMode
+        //            ? Color.FromArgb(200, 200, 200)  // Gris claro en modo oscuro
+        //            : Color.FromArgb(48, 48, 48);    // Gris fuerte en modo claro
+
+        //        float borderWidth = 1.3f;
+
+        //        using (Pen borderPen = new Pen(borderColor, borderWidth))
+        //        {
+        //            borderPen.Alignment = PenAlignment.Center;
+        //            e.Graphics.DrawPath(borderPen, path);
+        //        }
+        //    }
+        //}
+
+        //protected override void OnPaint(PaintEventArgs e)
+        //{
+        //    base.OnPaint(e);
+
+        //    int radius = 12;
+        //    using (GraphicsPath path = new GraphicsPath())
+        //    {
+        //        path.AddArc(0, 0, radius, radius, 180, 90);
+        //        path.AddArc(Width - radius - 1, 0, radius, radius, 270, 90);
+        //        path.AddArc(Width - radius - 1, Height - radius - 1, radius, radius, 0, 90);
+        //        path.AddArc(0, Height - radius - 1, radius, radius, 90, 90);
+        //        path.CloseFigure();
+
+        //        Color borderColor = Settings.DarkMode ? Color.LightGray : Color.DimGray;
+        //        using (Pen pen = new Pen(borderColor, 1.5f))
+        //        {
+        //            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+        //            e.Graphics.DrawPath(pen, path);
+        //        }
+        //    }
+        //}
+
+
+        // Add an elegant shadow
         protected override void OnHandleCreated(EventArgs e)
         {
             base.OnHandleCreated(e);
-            int radius = 12;
-            Region = Region.FromHrgn(WinApi.CreateRoundRectRgn(0, 0, Width, Height, radius, radius));
+
+            var margins = new WinApi.MARGINS()
+            {
+                cxLeftWidth = 1,
+                cxRightWidth = 1,
+                cyTopHeight = 1,
+                cyBottomHeight = 1
+            };
+            WinApi.DwmExtendFrameIntoClientArea(this.Handle, ref margins);
+
+            // Borde redondeado
+            UpdateRegion();
+        }
+
+
+        // Rounded border
+        private void UpdateRegion()
+        {
+            if (Region != null) Region.Dispose();
+            Region = Region.FromHrgn(WinApi.CreateRoundRectRgn(0, 0, Width, Height, CORNER_RADIUS, CORNER_RADIUS));
         }
     }
 }

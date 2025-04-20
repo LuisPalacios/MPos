@@ -9,6 +9,7 @@ namespace MPos
     /// Represents a Win32 point structure.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
+
     public struct WinPoint
     {
         public int X;
@@ -47,6 +48,14 @@ namespace MPos
     /// </summary>
     public static class WinApi
     {
+        public struct MARGINS
+        {
+            public int cxLeftWidth;
+            public int cxRightWidth;
+            public int cyTopHeight;
+            public int cyBottomHeight;
+        }
+
         #region API methods
 
         [SuppressUnmanagedCodeSecurity]
@@ -69,6 +78,10 @@ namespace MPos
         [SuppressUnmanagedCodeSecurity]
         [DllImport("gdi32.dll")]
         public static extern IntPtr CreateRoundRectRgn(int nLeft, int nTop, int nRight, int nBottom, int nWidthEllipse, int nHeightEllipse);
+
+        [DllImport("dwmapi.dll")]
+        public static extern int DwmExtendFrameIntoClientArea(IntPtr hwnd, ref MARGINS margins);
+
 
         #endregion
 
