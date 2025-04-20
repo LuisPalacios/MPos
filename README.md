@@ -10,14 +10,8 @@ MPos is a minimalistic and easy to use tool to track the current position of the
 <img src="img/mpos_views_small.png" height="350px">
 </p>
 
-## Features
 
-- Track the cursor position in physical pixels (*Physical*) and scaled pixels (*Scaled*)
-- See the cursor position relative to the active window (*Relative*)
-- See the DPI scaling of the current monitor (*Scaling*)
-- See the raw (real) DPI of the current monitor (*Raw Dpi*)
-
-## ✨ New Features in This Fork
+## ✨ Features in this Fork
 
 - Show **which monitor** the cursor is currently on (including friendly name when available)
 - Detect and display **monitor DPI**, **DPI scaling**, and **raw DPI** using Windows 10+ APIs
@@ -37,7 +31,7 @@ MPos is a minimalistic and easy to use tool to track the current position of the
 
 This project uses Windows APIs introduced in Windows 10 for accurate per-monitor DPI support and virtualized coordinates.
 
-## 🔧 Setup & Building
+## 🔧 Setup & building
 
 You can build the project using **Visual Studio 2022** or newer. It is fully self-contained and does not require installation. Simply build and run.
 
