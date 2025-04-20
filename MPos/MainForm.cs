@@ -9,6 +9,7 @@ using MPos.Controls;
 using Bluegrams.Windows.Tools;
 using Bluegrams.Application;
 using Bluegrams.Application.WinForms;
+using System.IO.Ports;
 
 namespace MPos
 {
@@ -178,7 +179,7 @@ namespace MPos
             panDraw.Invalidate();
         }
 
-        
+
 
         /// <summary>
         /// Called when panel with position data needs to be updated.
@@ -306,8 +307,8 @@ namespace MPos
             conTopmost.Checked = TopMost;
             conDarkMode.Checked = Settings.DarkMode;
             conShowInTaskbar.Checked = ShowInTaskbar;
-            conPositionsVisibleMain.Checked = Settings.PositionLogVisible; 
-            trackOpacity.TrackBarValue = (int)(this.Opacity*100);
+            conPositionsVisibleMain.Checked = Settings.PositionLogVisible;
+            trackOpacity.TrackBarValue = (int)(this.Opacity * 100);
         }
 
         private void contextView_Opening(object sender, CancelEventArgs e)
