@@ -66,6 +66,10 @@ namespace MPos
         [DllImport("Shcore.dll")]
         public static extern int GetDpiForMonitor(IntPtr hmonitor, MonitorDpiType dpiType, out int dpiX, out int dpiY); // ← cambiado a public y tipo de retorno corregido
 
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("gdi32.dll")]
+        public static extern IntPtr CreateRoundRectRgn(int nLeft, int nTop, int nRight, int nBottom, int nWidthEllipse, int nHeightEllipse);
+
         #endregion
 
         #region Static methods

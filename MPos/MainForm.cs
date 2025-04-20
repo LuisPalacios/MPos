@@ -11,6 +11,7 @@ using Bluegrams.Application;
 using Bluegrams.Application.WinForms;
 using System.IO.Ports;
 using System.Runtime.InteropServices;
+using System.Drawing.Drawing2D;
 
 namespace MPos
 {
@@ -46,6 +47,7 @@ namespace MPos
         {
             Settings = new Settings();
             Position = new PositionData();
+            this.Padding = new Padding(1); // space for border
             initManager();
             updateChecker = new WinFormsUpdateChecker(Program.UpdateCheckUrl, this);
             InitializeComponent();
@@ -159,6 +161,8 @@ namespace MPos
             this.Width = (int)(220 * factor);
             lstPositions.Visible = Settings.PositionLogVisible;
             lstPositions.ItemHeight = (int)(factor * Settings.FontSize + 6);
+            int radius = 8;
+            Region = Region.FromHrgn(WinApi.CreateRoundRectRgn(0, 0, Width, Height, radius, radius));
             panDraw.Invalidate();
             lstPositions.Invalidate();
         }
@@ -515,5 +519,51 @@ namespace MPos
             return dpiX;
         }
 
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                const int CS_DROPSHADOW = 0x00020000;
+                CreateParams cp = base.CreateParams;
+                cp.ClassStyle |= CS_DROPSHADOW;
+                return cp;
+            }
+        }
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+            //Color borderColor = Settings.DarkMode ? Color.DimGray : Color.DarkGray;
+            //ControlPaint.DrawBorder(e.Graphics, this.ClientRectangle, borderColor, ButtonBorderStyle.Solid);
+
+            int radius = 12;
+            using (GraphicsPath path = new GraphicsPath())
+            {
+                path.AddArc(0, 0, radius, radius, 180, 90);
+                path.AddArc(Width - radius - 1, 0, radius, radius, 270, 90);
+                path.AddArc(Width - radius - 1, Height - radius - 1, radius, radius, 0, 90);
+                path.AddArc(0, Height - radius - 1, radius, radius, 90, 90);
+                path.CloseAllFigures();
+
+                //using (Pen pen = new Pen(Settings.DarkMode ? Color.DimGray : Color.DarkGray, 1))
+                //{
+                //    e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                //    e.Graphics.DrawPath(pen, path);
+                //}
+
+                using (Pen pen = new Pen(Color.DeepSkyBlue, 1.5f)) // 🎨 grosor y color aquí
+                {
+                    e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                    e.Graphics.DrawPath(pen, path);
+                }
+            }
+
+        }
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            int radius = 12;
+            Region = Region.FromHrgn(WinApi.CreateRoundRectRgn(0, 0, Width, Height, radius, radius));
+        }
     }
 }
