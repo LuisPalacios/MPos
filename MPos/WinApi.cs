@@ -32,7 +32,7 @@ namespace MPos
     {
         MONITOR_DEFUALRRONULL = 0,
         MONITOR_DEFAULTTOPRIMARY = 1,
-        MONITOR_DEFUALTTONEAREST = 2
+        MONITOR_DEFUALTTONEAREST = 2 // ← TIP: hay un typo aquí en DEFUALT
     }
 
     public enum MonitorDpiType
@@ -45,7 +45,7 @@ namespace MPos
     /// <summary>
     /// A class that wraps some used Win32 Api calls.
     /// </summary>
-    public class WinApi
+    public static class WinApi
     {
         #region API methods
 
@@ -59,12 +59,12 @@ namespace MPos
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("User32.dll")]
-        private static extern IntPtr MonitorFromPoint(WinPoint pt, MonitorOptions dwFlags);
+        public static extern IntPtr MonitorFromPoint(WinPoint pt, MonitorOptions dwFlags); // ← cambiado a public
 
         // requires Windows 8.1 or newer
         [SuppressUnmanagedCodeSecurity]
         [DllImport("Shcore.dll")]
-        private static extern IntPtr GetDpiForMonitor(IntPtr hmonitor, MonitorDpiType dpiType, out int dpiX, out int dpiY);
+        public static extern int GetDpiForMonitor(IntPtr hmonitor, MonitorDpiType dpiType, out int dpiX, out int dpiY); // ← cambiado a public y tipo de retorno corregido
 
         #endregion
 
@@ -73,8 +73,6 @@ namespace MPos
         /// <summary>
         /// Maps a point in screen coordinates to coordinates relative to the active window.
         /// </summary>
-        /// <param name="point">A point in screen coordinates.</param>
-        /// <returns>The given point in coordinates relative to the active window.</returns>
         public static WinPoint ScreenPointToClient(WinPoint point)
         {
             IntPtr hWnd = GetForegroundWindow();
@@ -83,17 +81,15 @@ namespace MPos
         }
 
         /// <summary>
-        /// Gets the dpi of the monitor.
+        /// Gets the dpi of the monitor from a screen point.
         /// </summary>
-        /// <param name="pt">A point specifying the monitor that should be used.</param>
-        /// <param name="dpiType">A value of MonitorDpiType indicating the dpi type to be returned.</param>
-        /// <returns>The dpi of the monitor.</returns>
         public static int GetMonitorDpiFromPoint(WinPoint pt, MonitorDpiType dpiType)
         {
             IntPtr hmonitor = MonitorFromPoint(pt, MonitorOptions.MONITOR_DEFUALTTONEAREST);
             GetDpiForMonitor(hmonitor, dpiType, out int dpiX, out int dpiY);
             return dpiX;
         }
+
         #endregion
     }
 }

@@ -10,6 +10,7 @@ using Bluegrams.Windows.Tools;
 using Bluegrams.Application;
 using Bluegrams.Application.WinForms;
 using System.IO.Ports;
+using System.Runtime.InteropServices;
 
 namespace MPos
 {
@@ -491,5 +492,24 @@ namespace MPos
             }
         }
         #endregion
+
+        // === DPI-Aware & Monitor Info Enhancements ===
+        private string GetCurrentMonitorInfo()
+        {
+            var cursorPos = Cursor.Position;
+            var screen = Screen.FromPoint(cursorPos);
+            return $"Monitor: {screen.DeviceName} - Bounds: {screen.Bounds.Width}x{screen.Bounds.Height}";
+        }
+
+        [DllImport("Shcore.dll")]
+        private static extern int GetDpiForMonitor(IntPtr hmonitor, int dpiType, out uint dpiX, out uint dpiY);
+
+        private int GetDpiForMonitor(IntPtr hMonitor)
+        {
+            uint dpiX, dpiY;
+            GetDpiForMonitor(hMonitor, 0, out dpiX, out dpiY);
+            return (int)dpiX;
+        }
+
     }
 }
