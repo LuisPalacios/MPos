@@ -1,20 +1,10 @@
-# MPos - Mouse Position Tracker
+# MPos - Mouse Position Tracker (Fork)
 
+> 🚀 Modernized fork of the original [MPos](https://github.com/bluegrams/MPos) — now with enhanced DPI-awareness, multimonitor support, and UI improvements. A mouse position tracker and DPI information for Windows 10 and 11.
 
-[![Updates](https://img.shields.io/badge/updates-RSS-ffa500?logo=rss)](https://sourceforge.net/p/mpos/news/feed.rss)
-[![GitHub tag](https://img.shields.io/github/tag/bluegrams/mpos.svg)](https://github.com/bluegrams/MPos)
-[![GitHub License](https://img.shields.io/github/license/bluegrams/mpos.svg)](https://github.com/bluegrams/MPos/blob/master/LICENSE.txt)
-[![Download MPos - Mouse Position](https://img.shields.io/sourceforge/dm/mpos.svg)](https://sourceforge.net/projects/mpos/files/)
+This project is a continued development of the original **MPos - Mouse Position Tracker**. While the original tool was a minimalistic and portable way to track mouse position and monitor DPI scaling on Windows, this fork builds upon it with a focus on **modern displays**, **multimonitor environments**, and **per-monitor DPI support**.
 
-> Mouse position tracker and DPI information for Windows 10
-
-[![](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/mpos/files/)
-
-MPos is a minimalistic and easy to use tool to track the current position of the
-cursor on the screen. MPos especially considers High-DPI monitors and DPI scaling
-of Windows 10. The tracked cursor position is provided in physical/ unscaled Windows
-pixels and in coordinates scaled by DPI-virtualization. The tool also provides information
-about the DPI scaling and the raw/ physical DPI of the current monitor.
+MPos is a minimalistic and easy to use tool to track the current position of the cursor on the screen. MPos especially considers High-DPI monitors and DPI scaling of Windows. The tracked cursor position is provided in physical/ unscaled Windows pixels and in coordinates scaled by DPI-virtualization. The tool also provides information about the DPI scaling and the raw/ physical DPI of the current monitor.
 
 <p align="center">
 <img src="img/mpos_views_small.png" height="350px">
@@ -23,61 +13,36 @@ about the DPI scaling and the raw/ physical DPI of the current monitor.
 ## Features
 
 - Track the cursor position in physical pixels (*Physical*) and scaled pixels (*Scaled*)
-
 - See the cursor position relative to the active window (*Relative*)
-
 - See the DPI scaling of the current monitor (*Scaling*)
-
 - See the raw (real) DPI of the current monitor (*Raw Dpi*)
 
-- Determine the color of the pixel at the cursor position (*RGB*)
+## ✨ New Features in This Fork
 
-- Flexibly adjust shown data
-
-- Grab the current cursor position with global shortcut
-
-- Log of last grabbed cursor positions for easy copying
-
-- Configure appearance, opacity and dark mode
-
+- Show **which monitor** the cursor is currently on (including friendly name when available)
+- Detect and display **monitor DPI**, **DPI scaling**, and **raw DPI** using Windows 10+ APIs
+- Corrected now shows both **physical** and **logical (scaled)** mouse coordinates
+- Track mouse position **relative to the focused window**
+- Live preview of the **pixel color under the cursor**
+- **Multi-monitor awareness** with accurate DPI context per screen
+- Optionally **toggle visibility** of each data field via context menu
+- Configurable **global shortcut** to grab & log position data
+- Optional **dark mode**, opacity settings, and persistent layout
 - Fully portable with no installation needed
 
-## Setup
+## 🖥 Requirements
 
-#### Requirements
+- **Windows 10 or newer**
+- **.NET Framework 4.8** or newer
 
-MPos requires **Windows 10 or newer** and **.NET Framework 4.8** or newer.
-MPos does not support Windows versions prior to 10 because its DPI scaling
-related features depend on API methods introduced with this version.
+This project uses Windows APIs introduced in Windows 10 for accurate per-monitor DPI support and virtualized coordinates.
 
-#### Get MPos
+## 🔧 Setup & Building
 
-- Download the [latest release from SourceForge](https://sourceforge.net/projects/mpos/files/)
+You can build the project using **Visual Studio 2022** or newer. It is fully self-contained and does not require installation. Simply build and run.
 
-or
+## 🚧 License
 
-- Install from [Chocolatey](https://chocolatey.org):
-```
-choco install mpos
-```
+This project is based on the original [MPos by Bluegrams](https://github.com/bluegrams/MPos), which is licensed under the **BSD-3-Clause** license. This fork maintains the same license.
 
-## Version History
-
-Read [the changelog](https://github.com/bluegrams/MPos/blob/master/Changelog.md) to see changes in each version.
-
-## Feedback and Support
-
-_Please leave a feedback on [Sourceforge](https://sourceforge.net/p/mpos/reviews) and recommend MPos if you like it. Thank you!_
-
-Places to get help:
-
-- Ask on [Sourceforge](https://sourceforge.net/p/mpos/discussion/) (General help, ideas etc.)
-- Open an issue on [GitHub](https://github.com/bluegrams/MPos/issues) (Bugs, feature requests etc.)
-
-## Contributing
-
-You are welcome to contribute by opening a [pull request on GitHub](https://github.com/bluegrams/MPos/pulls).
-
-## License
-
-This software is published under [BSD-3-Clause license](LICENSE.txt) by Bluegrams.
+See [LICENSE.txt](LICENSE.txt) for details.
