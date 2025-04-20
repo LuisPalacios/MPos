@@ -26,6 +26,12 @@ namespace MPos
         /// Determines if the pixel color should be displayed.
         /// </summary>
         public bool PixelColorVisible { get; set; } = true;
+
+        /// <summary>   
+        /// Determines if the monitor name should be displayed.
+        /// </summary>
+        public bool ShowMonitorNameVisible { get; set; } = true;
+
         /// <summary>
         /// Determines if the app is in dark mode.
         /// </summary>

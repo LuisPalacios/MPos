@@ -36,6 +36,7 @@
             this.conShowDpi = new System.Windows.Forms.ToolStripMenuItem();
             this.conShowResolution = new System.Windows.Forms.ToolStripMenuItem();
             this.conShowColor = new System.Windows.Forms.ToolStripMenuItem();
+            this.conShowMonitor = new System.Windows.Forms.ToolStripMenuItem();
             this.conShownData = new System.Windows.Forms.ToolStripMenuItem();
             this.lstPositions = new System.Windows.Forms.ListBox();
             this.contextList = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -70,21 +71,23 @@
             // 
             // contextView
             // 
+            this.contextView.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.contextView.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.conShowScaled,
             this.conShowRelative,
             this.conShowDpi,
             this.conShowResolution,
-            this.conShowColor});
+            this.conShowColor,
+            this.conShowMonitor});
             this.contextView.Name = "contextView";
             this.contextView.OwnerItem = this.conShownData;
-            this.contextView.Size = new System.Drawing.Size(201, 114);
+            this.contextView.Size = new System.Drawing.Size(234, 124);
             this.contextView.Opening += new System.ComponentModel.CancelEventHandler(this.contextView_Opening);
             // 
             // conShowScaled
             // 
             this.conShowScaled.Name = "conShowScaled";
-            this.conShowScaled.Size = new System.Drawing.Size(200, 22);
+            this.conShowScaled.Size = new System.Drawing.Size(233, 24);
             this.conShowScaled.Tag = "Scaled";
             this.conShowScaled.Text = "Dpi-Scaled Position";
             this.conShowScaled.Click += new System.EventHandler(this.shownDataItem_Click);
@@ -92,7 +95,7 @@
             // conShowRelative
             // 
             this.conShowRelative.Name = "conShowRelative";
-            this.conShowRelative.Size = new System.Drawing.Size(200, 22);
+            this.conShowRelative.Size = new System.Drawing.Size(233, 24);
             this.conShowRelative.Tag = "Relative";
             this.conShowRelative.Text = "Relative Position";
             this.conShowRelative.Click += new System.EventHandler(this.shownDataItem_Click);
@@ -100,15 +103,16 @@
             // conShowDpi
             // 
             this.conShowDpi.Name = "conShowDpi";
-            this.conShowDpi.Size = new System.Drawing.Size(200, 22);
+            this.conShowDpi.Size = new System.Drawing.Size(233, 24);
             this.conShowDpi.Tag = "Dpi";
             this.conShowDpi.Text = "Dpi Information";
             this.conShowDpi.Click += new System.EventHandler(this.shownDataItem_Click);
+
             // 
             // conShowResolution
             // 
             this.conShowResolution.Name = "conShowResolution";
-            this.conShowResolution.Size = new System.Drawing.Size(200, 22);
+            this.conShowResolution.Size = new System.Drawing.Size(233, 24);
             this.conShowResolution.Tag = "ScreenResolution";
             this.conShowResolution.Text = "Screen Resolution";
             this.conShowResolution.Click += new System.EventHandler(this.shownDataItem_Click);
@@ -116,16 +120,22 @@
             // conShowColor
             // 
             this.conShowColor.Name = "conShowColor";
-            this.conShowColor.Size = new System.Drawing.Size(200, 22);
+            this.conShowColor.Size = new System.Drawing.Size(233, 24);
             this.conShowColor.Tag = "PixelColor";
             this.conShowColor.Text = "Color at Cursor Position";
             this.conShowColor.Click += new System.EventHandler(this.shownDataItem_Click);
+            // Monitor
+            this.conShowMonitor.Name = "conShowMonitor";
+            this.conShowMonitor.Size = new System.Drawing.Size(200, 22);
+            this.conShowMonitor.Tag = "ShowMonitorName";
+            this.conShowMonitor.Text = "Monitor Name";
+            this.conShowMonitor.Click += new System.EventHandler(this.shownDataItem_Click);
             // 
             // conShownData
             // 
             this.conShownData.DropDown = this.contextView;
             this.conShownData.Name = "conShownData";
-            this.conShownData.Size = new System.Drawing.Size(212, 22);
+            this.conShownData.Size = new System.Drawing.Size(248, 24);
             this.conShownData.Text = "Shown Data";
             // 
             // lstPositions
@@ -135,10 +145,11 @@
             this.lstPositions.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.lstPositions.FormattingEnabled = true;
             this.lstPositions.IntegralHeight = false;
-            this.lstPositions.Location = new System.Drawing.Point(0, 168);
+            this.lstPositions.ItemHeight = 16;
+            this.lstPositions.Location = new System.Drawing.Point(0, 244);
             this.lstPositions.Margin = new System.Windows.Forms.Padding(0);
             this.lstPositions.Name = "lstPositions";
-            this.lstPositions.Size = new System.Drawing.Size(220, 60);
+            this.lstPositions.Size = new System.Drawing.Size(293, 73);
             this.lstPositions.TabIndex = 1;
             this.lstPositions.Click += new System.EventHandler(this.lstPositions_Click);
             this.lstPositions.LocationChanged += new System.EventHandler(this.lstPositions_LocationChanged);
@@ -147,6 +158,7 @@
             // 
             // contextList
             // 
+            this.contextList.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.contextList.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.conPositionsCopy,
             this.conPositionsDelete,
@@ -154,14 +166,14 @@
             this.conCopyAll,
             this.conClearPositionLog});
             this.contextList.Name = "contextList";
-            this.contextList.Size = new System.Drawing.Size(162, 98);
+            this.contextList.Size = new System.Drawing.Size(187, 106);
             this.contextList.Opening += new System.ComponentModel.CancelEventHandler(this.contextList_Opening);
             // 
             // conPositionsCopy
             // 
             this.conPositionsCopy.Name = "conPositionsCopy";
             this.conPositionsCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.conPositionsCopy.Size = new System.Drawing.Size(161, 22);
+            this.conPositionsCopy.Size = new System.Drawing.Size(186, 24);
             this.conPositionsCopy.Text = "Copy";
             this.conPositionsCopy.Click += new System.EventHandler(this.conPositionsCopy_Click);
             // 
@@ -169,27 +181,27 @@
             // 
             this.conPositionsDelete.Name = "conPositionsDelete";
             this.conPositionsDelete.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this.conPositionsDelete.Size = new System.Drawing.Size(161, 22);
+            this.conPositionsDelete.Size = new System.Drawing.Size(186, 24);
             this.conPositionsDelete.Text = "Delete";
             this.conPositionsDelete.Click += new System.EventHandler(this.conPositionsDelete_Click);
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(158, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(183, 6);
             // 
             // conCopyAll
             // 
             this.conCopyAll.Name = "conCopyAll";
             this.conCopyAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
-            this.conCopyAll.Size = new System.Drawing.Size(161, 22);
+            this.conCopyAll.Size = new System.Drawing.Size(186, 24);
             this.conCopyAll.Text = "Copy All";
             this.conCopyAll.Click += new System.EventHandler(this.conCopyAll_Click);
             // 
             // conClearPositionLog
             // 
             this.conClearPositionLog.Name = "conClearPositionLog";
-            this.conClearPositionLog.Size = new System.Drawing.Size(161, 22);
+            this.conClearPositionLog.Size = new System.Drawing.Size(186, 24);
             this.conClearPositionLog.Text = "Delete All";
             this.conClearPositionLog.Click += new System.EventHandler(this.conClearPositions_Click);
             // 
@@ -198,12 +210,14 @@
             this.panDraw.ContextMenuStrip = this.contextMain;
             this.panDraw.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panDraw.Location = new System.Drawing.Point(0, 0);
+            this.panDraw.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panDraw.Name = "panDraw";
-            this.panDraw.Size = new System.Drawing.Size(220, 168);
+            this.panDraw.Size = new System.Drawing.Size(293, 244);
             this.panDraw.TabIndex = 3;
             // 
             // contextMain
             // 
+            this.contextMain.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.contextMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.conStart,
             this.conLog,
@@ -222,34 +236,34 @@
             this.contextMain.Name = "contextMain";
             this.contextMain.ShowCheckMargin = true;
             this.contextMain.ShowImageMargin = false;
-            this.contextMain.Size = new System.Drawing.Size(213, 280);
+            this.contextMain.Size = new System.Drawing.Size(249, 304);
             this.contextMain.Opening += new System.ComponentModel.CancelEventHandler(this.contextMain_Opening);
             // 
             // conStart
             // 
             this.conStart.Name = "conStart";
             this.conStart.ShortcutKeyDisplayString = "F5";
-            this.conStart.Size = new System.Drawing.Size(212, 22);
+            this.conStart.Size = new System.Drawing.Size(248, 24);
             this.conStart.Text = "Start/ Stop Capturing";
             this.conStart.Click += new System.EventHandler(this.butStart_Click);
             // 
             // conLog
             // 
             this.conLog.Name = "conLog";
-            this.conLog.Size = new System.Drawing.Size(212, 22);
+            this.conLog.Size = new System.Drawing.Size(248, 24);
             this.conLog.Text = "Grab Position";
             this.conLog.Click += new System.EventHandler(this.conLog_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(209, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(245, 6);
             // 
             // conTopmost
             // 
             this.conTopmost.Name = "conTopmost";
             this.conTopmost.ShortcutKeyDisplayString = "Ctrl+T";
-            this.conTopmost.Size = new System.Drawing.Size(212, 22);
+            this.conTopmost.Size = new System.Drawing.Size(248, 24);
             this.conTopmost.Text = "Stay on Top";
             this.conTopmost.Click += new System.EventHandler(this.conTopmost_Click);
             // 
@@ -257,21 +271,21 @@
             // 
             this.conPositionsVisibleMain.Name = "conPositionsVisibleMain";
             this.conPositionsVisibleMain.ShortcutKeyDisplayString = "Ctrl+L";
-            this.conPositionsVisibleMain.Size = new System.Drawing.Size(212, 22);
+            this.conPositionsVisibleMain.Size = new System.Drawing.Size(248, 24);
             this.conPositionsVisibleMain.Text = "Show Position Log";
             this.conPositionsVisibleMain.Click += new System.EventHandler(this.conPositionsVisible_Click);
             // 
             // conShowInTaskbar
             // 
             this.conShowInTaskbar.Name = "conShowInTaskbar";
-            this.conShowInTaskbar.Size = new System.Drawing.Size(212, 22);
+            this.conShowInTaskbar.Size = new System.Drawing.Size(248, 24);
             this.conShowInTaskbar.Text = "Show in Taskbar";
             this.conShowInTaskbar.Click += new System.EventHandler(this.conShowInTaskbar_Click);
             // 
             // conDarkMode
             // 
             this.conDarkMode.Name = "conDarkMode";
-            this.conDarkMode.Size = new System.Drawing.Size(212, 22);
+            this.conDarkMode.Size = new System.Drawing.Size(248, 24);
             this.conDarkMode.Text = "Dark Mode";
             this.conDarkMode.Click += new System.EventHandler(this.conDarkMode_Click);
             // 
@@ -280,7 +294,7 @@
             this.conOpacity.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.trackOpacity});
             this.conOpacity.Name = "conOpacity";
-            this.conOpacity.Size = new System.Drawing.Size(212, 22);
+            this.conOpacity.Size = new System.Drawing.Size(248, 24);
             this.conOpacity.Text = "Opacity";
             // 
             // trackOpacity
@@ -296,27 +310,27 @@
             // 
             this.conCustomizeMain.Name = "conCustomizeMain";
             this.conCustomizeMain.ShortcutKeyDisplayString = "Ctrl+,";
-            this.conCustomizeMain.Size = new System.Drawing.Size(212, 22);
+            this.conCustomizeMain.Size = new System.Drawing.Size(248, 24);
             this.conCustomizeMain.Text = "Customize...";
             this.conCustomizeMain.Click += new System.EventHandler(this.conCustomize_Click);
             // 
             // conShortcut
             // 
             this.conShortcut.Name = "conShortcut";
-            this.conShortcut.Size = new System.Drawing.Size(212, 22);
+            this.conShortcut.Size = new System.Drawing.Size(248, 24);
             this.conShortcut.Text = "Configure Shortcut...";
             this.conShortcut.Click += new System.EventHandler(this.conShortcut_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(209, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(245, 6);
             // 
             // conAbout
             // 
             this.conAbout.Name = "conAbout";
             this.conAbout.ShortcutKeyDisplayString = "F1";
-            this.conAbout.Size = new System.Drawing.Size(212, 22);
+            this.conAbout.Size = new System.Drawing.Size(248, 24);
             this.conAbout.Text = "About";
             this.conAbout.Click += new System.EventHandler(this.AboutMenuItem_Click);
             // 
@@ -324,7 +338,7 @@
             // 
             this.conExit.Name = "conExit";
             this.conExit.ShortcutKeyDisplayString = "Esc";
-            this.conExit.Size = new System.Drawing.Size(212, 22);
+            this.conExit.Size = new System.Drawing.Size(248, 24);
             this.conExit.Text = "Exit";
             this.conExit.Click += new System.EventHandler(this.conExit_Click);
             // 
@@ -339,9 +353,10 @@
             // lblHelp
             // 
             this.lblHelp.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.lblHelp.Location = new System.Drawing.Point(0, 168);
+            this.lblHelp.Location = new System.Drawing.Point(0, 207);
+            this.lblHelp.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblHelp.Name = "lblHelp";
-            this.lblHelp.Size = new System.Drawing.Size(220, 60);
+            this.lblHelp.Size = new System.Drawing.Size(293, 74);
             this.lblHelp.TabIndex = 4;
             this.lblHelp.Text = "No shortcut.";
             this.lblHelp.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -349,15 +364,16 @@
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(220, 228);
+            this.ClientSize = new System.Drawing.Size(293, 317);
             this.Controls.Add(this.lblHelp);
             this.Controls.Add(this.panDraw);
             this.Controls.Add(this.lstPositions);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "MPos";
@@ -400,6 +416,7 @@
         private System.Windows.Forms.ToolStripMenuItem conShowRelative;
         private System.Windows.Forms.ToolStripMenuItem conShowDpi;
         private System.Windows.Forms.ToolStripMenuItem conShowColor;
+        private System.Windows.Forms.ToolStripMenuItem conShowMonitor;
         private System.Windows.Forms.ToolStripMenuItem conShowResolution;
         private System.Windows.Forms.ToolStripMenuItem conCustomizeMain;
         private System.Windows.Forms.ToolStripMenuItem conClearPositionLog;

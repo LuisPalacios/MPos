@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
@@ -7,84 +8,68 @@ namespace MPos
 {
     public struct PositionData
     {
-        /// <summary>
-        /// The physical pixel position on the screen.
-        /// </summary>
         public readonly Point PhysicalPosition;
-        /// <summary>
-        /// The DPI-scaled pixel position on the screen.
-        /// </summary>
         public readonly Point ScaledPosition;
-        /// <summary>
-        /// The position relative to the currently focused window in pixels.
-        /// </summary>
         public readonly Point RelativePosition;
-        /// <summary>
-        /// The DPI value of the current monitor.
-        /// </summary>
+
         public readonly int Dpi;
-        /// <summary>
-        /// The raw DPI value of the current monitor.
-        /// </summary>
         public readonly int RawDpi;
-        /// <summary>
-        /// The currently set DPI scaling for the current monitor.
-        /// </summary>
         public readonly double DpiScaling;
-        /// <summary>
-        /// The DPI to raw DPI ratio.
-        /// </summary>
         public readonly double DpiRawRatio;
-        /// <summary>
-        /// The bounds of the current monitor.
-        /// </summary>
+
         public readonly Size ScreenResolution;
-        /// <summary>
-        /// The color of the pixel at the position.
-        /// </summary>
         public readonly Color PixelColor;
 
-        /// <summary>
-        /// Creates a PositionData instance from a given point.
-        /// </summary>
+        public readonly string MonitorName; // NUEVO: nombre del monitor
+
         public PositionData(Point position)
         {
             WinPoint winPos = (WinPoint)position;
             this.PhysicalPosition = position;
-            // Determine dpi information
+
+            // Obtener pantalla actual
+            var allScreens = Screen.AllScreens;
+            var screen = Screen.FromPoint(position);
+            var index = Array.IndexOf(allScreens, screen);
+            this.MonitorName = GetMonitorFriendlyName(index + 1); // 1-based index
+            this.ScreenResolution = screen.Bounds.Size;
+
+            // DPI efectivo (escalado lógico)
             this.Dpi = WinApi.GetMonitorDpiFromPoint(winPos, MonitorDpiType.EFFECTIVE_DPI);
-            this.DpiScaling = Math.Round(Dpi / (double)96, 2);
-            // Determine scaled position.
-            this.ScaledPosition = new Point((int)(position.X / DpiScaling),
-                                        (int)(position.Y / DpiScaling));
-            // Determine relative position.
+            this.DpiScaling = Math.Round(Dpi / 96.0, 2);
+
+            // Posición escalada
+            this.ScaledPosition = new Point(
+                (int)(position.X / DpiScaling),
+                (int)(position.Y / DpiScaling)
+            );
+
+            // Posición relativa a ventana activa
             this.RelativePosition = (Point)WinApi.ScreenPointToClient(winPos);
-            // Determine raw dpi.
+
+            // DPI físico (sin escalado)
             this.RawDpi = WinApi.GetMonitorDpiFromPoint(winPos, MonitorDpiType.RAW_DPI);
-            this.DpiRawRatio = Math.Round(Dpi / (double)RawDpi, 2);
-            // Determine screen bounds
-            this.ScreenResolution = Screen.FromPoint(position).Bounds.Size;
-            // Determine color at mouse position.
+            this.DpiRawRatio = Math.Round(RawDpi / (double)Dpi, 2);
+
+            // Color del píxel bajo el cursor
             this.PixelColor = GetPixelColor(winPos);
         }
 
-        /// <summary>
-        /// Returns the color of the pixel at the mouse's position.
-        /// </summary>
         public static Color GetPixelColor(WinPoint point)
         {
             Bitmap bmp = new Bitmap(1, 1);
-            using (Graphics g = Graphics.FromImage(bmp))
+            try
             {
-                try
+                using (Graphics g = Graphics.FromImage(bmp))
                 {
                     g.CopyFromScreen(point.X, point.Y, 0, 0, new Size(1, 1));
                 }
-                catch { }
+                return bmp.GetPixel(0, 0);
             }
-            Color color = bmp.GetPixel(0, 0);
-            bmp.Dispose();
-            return Color.FromArgb(color.R, color.G, color.B);
+            finally
+            {
+                bmp.Dispose();
+            }
         }
 
         public override string ToString() => ToString(new Settings());
@@ -93,22 +78,16 @@ namespace MPos
         {
             StringBuilder sb = new StringBuilder();
             sb.Append(formatPoint(settings, "Physical", PhysicalPosition));
-            //String s = $"Physical: {PhysicalPosition}";
             if (settings.ScaledVisible)
                 sb.Append("; ").Append(formatPoint(settings, "Scaled", ScaledPosition));
-            //s += $"; Scaled: {ScaledPosition}";
             if (settings.RelativeVisible)
                 sb.Append("; ").Append(formatPoint(settings, "Relative", RelativePosition));
-            //s += $"; Relative: {RelativePosition}";
             if (settings.DpiVisible)
                 sb.Append("; ").Append(formatDpi(settings));
-            //s += $"; Dpi: {Dpi}; Raw Dpi: {RawDpi}; Dpi Ratio: {DpiRawRatio}";
             if (settings.ScreenResolutionVisible)
                 sb.Append("; ").Append(formatResolution(settings, "Screen Resolution", ScreenResolution));
-            //s += $"; Screen Resolution: {ScreenResolution}";
             if (settings.PixelColorVisible)
                 sb.Append("; ").Append(formatColor(settings, PixelColor));
-                //s += $"; Pixel Color: {ColorTranslator.ToHtml(PixelColor)}";
             return sb.ToString();
         }
 
@@ -122,7 +101,7 @@ namespace MPos
             => new StringBuilder(settings.DataFormatDpi)
                 .Replace("{dpi}", Dpi.ToString())
                 .Replace("{rawDpi}", RawDpi.ToString())
-                .Replace("{dpiRatio}", DpiRawRatio.ToString());
+                .Replace("{dpiRatio}", DpiRawRatio.ToString("0.00"));
 
         private StringBuilder formatResolution(Settings settings, string name, Size s)
             => new StringBuilder(settings.DataFormatResolution)
@@ -133,5 +112,30 @@ namespace MPos
         private StringBuilder formatColor(Settings settings, Color c)
             => new StringBuilder(settings.DataFormatColor)
                 .Replace("{value}", ColorTranslator.ToHtml(c));
+
+
+        private static string GetMonitorFriendlyName(int displayIndex)
+        {
+            try
+            {
+                using (var searcher = new System.Management.ManagementObjectSearcher(
+                    @"root\wmi", "SELECT * FROM WmiMonitorID"))
+                {
+                    int i = 1;
+                    foreach (var obj in searcher.Get())
+                    {
+                        // Skip until we match the display index
+                        if (i++ != displayIndex)
+                            continue;
+
+                        var nameBytes = (ushort[])obj["UserFriendlyName"];
+                        string name = System.Text.Encoding.ASCII.GetString(nameBytes.Where(b => b != 0).Select(b => (byte)b).ToArray());
+                        return name;
+                    }
+                }
+            }
+            catch { }
+            return $"Monitor {displayIndex}";
+        }
     }
 }

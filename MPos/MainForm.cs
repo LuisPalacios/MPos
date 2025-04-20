@@ -101,7 +101,6 @@ namespace MPos
             applyCurrentTheme();
             restoreUI();
         }
-
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Control)
@@ -154,6 +153,7 @@ namespace MPos
             if (Settings.DpiVisible) height += 2 * lineHeight;
             if (Settings.ScreenResolutionVisible) height += lineHeight;
             if (Settings.PixelColorVisible) height += lineHeight;
+            if (Settings.ShowMonitorNameVisible) height += lineHeight; 
             this.MinimumSize = Size.Empty;
             this.Height = height;
             this.Width = (int)(220 * factor);
@@ -230,6 +230,13 @@ namespace MPos
                     Color col = Position.PixelColor;
                     g.DrawString(String.Format("R: {0,-4}  G: {1,-4}  B: {2,-4}", col.R, col.G, col.B),
                         f, b, paddLeft, paddTop + i * lineHeight);
+                    i++; // ← Necesario para no solapar
+                }
+                if (Settings.ShowMonitorNameVisible)
+                {
+                    g.DrawString("Monitor", f, b, paddLeft, paddTop + i * lineHeight);
+                    g.DrawString(Position.MonitorName, f, b, w3, paddTop + i * lineHeight);
+                    i++;
                 }
             }
         }
@@ -319,6 +326,7 @@ namespace MPos
             conShowDpi.Checked = Settings.DpiVisible;
             conShowResolution.Checked = Settings.ScreenResolutionVisible;
             conShowColor.Checked = Settings.PixelColorVisible;
+            conShowMonitor.Checked = Settings.ShowMonitorNameVisible;
         }
 
         private void conLog_Click(object sender, EventArgs e) => addPositionToLog();
@@ -501,14 +509,10 @@ namespace MPos
             return $"Monitor: {screen.DeviceName} - Bounds: {screen.Bounds.Width}x{screen.Bounds.Height}";
         }
 
-        [DllImport("Shcore.dll")]
-        private static extern int GetDpiForMonitor(IntPtr hmonitor, int dpiType, out uint dpiX, out uint dpiY);
-
-        private int GetDpiForMonitor(IntPtr hMonitor)
+        private int GetMonitorDpi(IntPtr hMonitor)
         {
-            uint dpiX, dpiY;
-            GetDpiForMonitor(hMonitor, 0, out dpiX, out dpiY);
-            return (int)dpiX;
+            WinApi.GetDpiForMonitor(hMonitor, MonitorDpiType.EFFECTIVE_DPI, out int dpiX, out int dpiY);
+            return dpiX;
         }
 
     }
