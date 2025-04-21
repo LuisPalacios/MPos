@@ -18,6 +18,8 @@ namespace MPos
     public partial class MainForm : DragSnapForm
     {
         private const int CORNER_RADIUS = 20;
+        private const int LAYOUT_PADDING = 8;
+        private const int BASE_LINE_SPACING = 13;
 
         private WinFormsWindowManager manager;
         private IUpdateChecker updateChecker;
@@ -29,7 +31,7 @@ namespace MPos
         private CustomColorTable colorTable;
         // Parameters for text in main panel.
         private float realFontSize = 9;  // settings font size scaled by dpi config
-        private int lineHeight = 24;
+        private int lineHeight = BASE_LINE_SPACING;
 
         public Settings Settings { get; set; }
         /// <summary>
@@ -147,7 +149,7 @@ namespace MPos
         private void restoreUI()
         {
             float factor = DeviceDpi / 96.0f;
-            lineHeight = (int)Math.Ceiling(factor * (Settings.FontSize + 15));
+            lineHeight = (int)Math.Ceiling(factor * (Settings.FontSize + BASE_LINE_SPACING));
             realFontSize = (int)(factor * Settings.FontSize);
             System.Diagnostics.Debug.WriteLine("Factor: {0}; line height: {1}; font size: {2}", factor, lineHeight, realFontSize);
             int height = lineHeight;
@@ -157,7 +159,8 @@ namespace MPos
             if (Settings.DpiVisible) height += 2 * lineHeight;
             if (Settings.ScreenResolutionVisible) height += lineHeight;
             if (Settings.PixelColorVisible) height += lineHeight;
-            if (Settings.ShowMonitorNameVisible) height += lineHeight; 
+            if (Settings.ShowMonitorNameVisible) height += lineHeight;
+            height += (int)(lineHeight * 0.2);
             this.MinimumSize = Size.Empty;
             this.Height = height;
             this.Width = (int)(220 * factor);
@@ -192,33 +195,43 @@ namespace MPos
         /// </summary>
         private void PanDraw_Paint(object sender, PaintEventArgs e)
         {
-            int paddLeft = 5, paddTop = 3;
-            int w3 = panDraw.Width / 3 + paddLeft;
+            int paddLeft = LAYOUT_PADDING, paddTop = LAYOUT_PADDING;
+            int w3 = (panDraw.Width - 2 * LAYOUT_PADDING) / 2; // Half the space for label/value
             Graphics g = e.Graphics;
             using (Font f = new Font(Settings.FontFamilyName, realFontSize, FontStyle.Regular, GraphicsUnit.Pixel))
             using (Brush b = new SolidBrush(Settings.DarkMode ? Color.White : Color.Black))
             {
-                g.DrawString("Physical", f, b, paddLeft, paddTop);
-                g.DrawString(formatPoint(Position.PhysicalPosition), f, b, w3, paddTop);
+                int i = 0;
+                // Monitor information
+                if (Settings.ShowMonitorNameVisible)
+                {
+                    g.DrawString("Monitor", f, b, paddLeft, paddTop + (i * lineHeight));
+                    g.DrawString(Position.MonitorName, f, b, w3, paddTop + (i * lineHeight));
+                    i++;
+                }
+                // Physical position
+                g.DrawString("Physical", f, b, paddLeft, paddTop + (i * lineHeight));
+                g.DrawString(formatPoint(Position.PhysicalPosition), f, b, paddLeft + w3, paddTop + (i * lineHeight));
+                i++;
                 // Draw position data only if they should be displayed.
-                int i = 1;
                 if (Settings.ScaledVisible)
                 {
-                    g.DrawString("Scaled", f, b, paddLeft, paddTop + i * lineHeight);
-                    g.DrawString(formatPoint(Position.ScaledPosition), f, b, w3, paddTop + i * lineHeight);
+                    g.DrawString("Scaled", f, b, paddLeft, paddTop + (i * lineHeight));
+                    g.DrawString(formatPoint(Position.ScaledPosition), f, b, paddLeft + w3, paddTop + (i * lineHeight));
                     i++;
                 }
                 if (Settings.RelativeVisible)
                 {
-                    g.DrawString("Relative", f, b, paddLeft, paddTop + i * lineHeight);
-                    g.DrawString(formatPoint(Position.RelativePosition), f, b, w3, paddTop + i * lineHeight);
+                    g.DrawString("Relative", f, b, paddLeft, paddTop + (i * lineHeight));
+                    //g.DrawString(formatPoint(Position.RelativePosition), f, b, w3, paddTop + i * lineHeight);
+                    g.DrawString(formatPoint(Position.RelativePosition), f, b, paddLeft + w3, paddTop + (i * lineHeight));
                     i++;
                 }
                 if (Settings.DpiVisible)
                 {
-                    g.DrawString("Scaling", f, b, paddLeft, paddTop + i * lineHeight);
+                    g.DrawString("Scaling", f, b, paddLeft, paddTop + (i * lineHeight));
                     g.DrawString(String.Format("{0} ({1} dpi)", Position.DpiScaling, Position.Dpi),
-                        f, b, w3, paddTop + i * lineHeight);
+                        f, b, w3, paddTop + (i * lineHeight));
                     g.DrawString("Raw Dpi", f, b, paddLeft, paddTop + (i + 1) * lineHeight);
                     g.DrawString(String.Format("{0}  (Ratio: {1})", Position.RawDpi, Position.DpiRawRatio),
                         f, b, w3, paddTop + (i + 1) * lineHeight);
@@ -226,23 +239,22 @@ namespace MPos
                 }
                 if (Settings.ScreenResolutionVisible)
                 {
-                    g.DrawString("Resolution", f, b, paddLeft, paddTop + i * lineHeight);
-                    g.DrawString(formatSize(Position.ScreenResolution), f, b, w3, paddTop + i * lineHeight);
+                    g.DrawString("Resolution", f, b, paddLeft, paddTop + (i * lineHeight));
+                    // g.DrawString(formatSize(Position.ScreenResolution), f, b, w3, paddTop + i * lineHeight);
+                    g.DrawString(formatSize(Position.ScreenResolution), f, b, w3, paddTop + (i * lineHeight));
                     i++;
                 }
                 if (Settings.PixelColorVisible)
                 {
                     Color col = Position.PixelColor;
-                    g.DrawString(String.Format("R: {0,-4}  G: {1,-4}  B: {2,-4}", col.R, col.G, col.B),
-                        f, b, paddLeft, paddTop + i * lineHeight);
-                    i++; // ← Necesario para no solapar
-                }
-                if (Settings.ShowMonitorNameVisible)
-                {
-                    g.DrawString("Monitor", f, b, paddLeft, paddTop + i * lineHeight);
-                    g.DrawString(Position.MonitorName, f, b, w3, paddTop + i * lineHeight);
+                    using (Font smallFont = new Font(f.FontFamily, realFontSize * 0.90f, FontStyle.Regular, GraphicsUnit.Pixel))
+                    {
+                        g.DrawString($"RGB({col.R,3} {col.G,3} {col.B,3})", smallFont, b, paddLeft, paddTop + i * lineHeight);
+                        g.DrawString($"#{col.R:X2}{col.G:X2}{col.B:X2}", smallFont, b, w3, paddTop + i * lineHeight);
+                    }
                     i++;
                 }
+
             }
         }
 
@@ -600,22 +612,16 @@ namespace MPos
         //}
 
 
-        // Add an elegant shadow
+        // 
+        /// <summary>
+        /// Called when the window handle is created. 
+        /// Sets the custom rounded window region to give the form rounded corners.
+        /// </summary>
+        /// <param name="e">Event data</param>
         protected override void OnHandleCreated(EventArgs e)
         {
             base.OnHandleCreated(e);
-
-            var margins = new WinApi.MARGINS()
-            {
-                cxLeftWidth = 1,
-                cxRightWidth = 1,
-                cyTopHeight = 1,
-                cyBottomHeight = 1
-            };
-            WinApi.DwmExtendFrameIntoClientArea(this.Handle, ref margins);
-
-            // Borde redondeado
-            UpdateRegion();
+            UpdateRegion(); // Apply rounded corners using CreateRoundRectRgn
         }
 
 
